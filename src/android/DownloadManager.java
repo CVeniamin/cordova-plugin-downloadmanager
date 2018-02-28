@@ -60,7 +60,7 @@ public class DownloadManager extends CordovaPlugin {
 					filename = uri.substring(uri.lastIndexOf("/")+1, uri.length());
 
 					try {
-						filename = URLDecoder.decode(filename,"UTF-8");
+						uri = URLDecoder.decode(uri,"UTF-8");
 					} catch (UnsupportedEncodingException e) {
 						callbackContext.error("Error in converting filename");
 					}

@@ -3,6 +3,9 @@ package downloadmanager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Build;
+import android.Manifest;
+import android.content.pm.PackageManager;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -17,6 +20,9 @@ import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.Calendar;
+
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 /**
  * This class echoes a string called from JavaScript.
@@ -36,6 +42,14 @@ public class DownloadManager extends CordovaPlugin {
 
 	private void startDownload(final JSONObject options, CallbackContext callbackContext) {
 		try {
+			
+			Activity activity = cordova.getActivity();
+			Context context = activity.getApplicationContext();
+			
+			if(Build.VERSION.SDK_INT >= 23 && (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+				ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+			}
+			
 			if (options != null && options.length() > 0) {
 				//default filename
 				DateFormat df = new SimpleDateFormat("yyMMddHHmmss.SSS");

@@ -74,21 +74,21 @@ public class DownloadManager extends CordovaPlugin {
 		   	if(options.has("description")){
                 request.setDescription(options.getString("description"));   
            	} else {
-			   request.setDescription("Downloading file");   
-		   	}
-			   
-		   	if(options.has("setPublicDirectory") && options.has("albumName") && options.getBoolean("setPublicDirectory") && options.getString("albumName")) {
-			  	//Set the local destination for the downloaded file to a path within the application's external files directory            
-				request.setDestinationInFilesDir(cordova.getActivity().getApplicationContext(), Environment.DIRECTORY_PICTURES, options.getString("albumName"));   
-		   	} else {
+		   		request.setDescription("Downloading file");   
+			}
+
+			if(options.has("setPublicDirectory") && options.has("albumName") && options.getBoolean("setPublicDirectory") && options.getString("albumName")) {
 				//Set the local destination for the downloaded file to a path within the application's external files directory            
-            	request.setDestinationInExternalFilesDir(cordova.getActivity().getApplicationContext(), Environment.DIRECTORY_DOWNLOADS, filename);   
-		   	}
+				request.setDestinationInFilesDir(cordova.getActivity().getApplicationContext(), Environment.DIRECTORY_PICTURES, options.getString("albumName"));   
+			} else {
+				//Set the local destination for the downloaded file to a path within the application's external files directory            
+				request.setDestinationInExternalFilesDir(cordova.getActivity().getApplicationContext(), Environment.DIRECTORY_DOWNLOADS, filename);   
+			}
 		   
             //Set visiblity after download is complete
             request.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             long downloadReference = downloadManager.enqueue(request);
-            callbackContext.success(message);
+            callbackContext.success(filename);
         } else {
             callbackContext.error("Expected one non-empty string argument.");
         }

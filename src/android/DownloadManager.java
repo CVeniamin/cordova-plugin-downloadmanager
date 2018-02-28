@@ -64,14 +64,14 @@ public class DownloadManager extends CordovaPlugin {
             request.setAllowedOverRoaming(false);
 			
 			//Set the title of this download, to be displayed in notifications (if enabled).
-            if(options.has("title"){
+            if(options.has("title")){
                 request.setTitle(options.getString("title"));
             } else {
 				request.setTitle(filename);
 			}
 			
 			//Set a description of this download, to be displayed in notifications (if enabled)
-		   	if(options.has("description"){
+		   	if(options.has("description")){
                 request.setDescription(options.getString("description"));   
            	} else {
 			   request.setDescription("Downloading file");   

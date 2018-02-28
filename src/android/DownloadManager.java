@@ -28,73 +28,74 @@ public class DownloadManager extends CordovaPlugin {
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-	if (action.equals("download")) {
-		final JSONObject params = args.getJSONObject(0);
-		this.startDownload(params, callbackContext);
-		return true;
+		if (action.equals("download")) {
+			final JSONObject params = args.getJSONObject(0);
+			this.startDownload(params, callbackContext);
+			return true;
+		}   
+		return false;
 	}
-	return false;
-}
 
-private void startDownload(final JSONObject options, CallbackContext callbackContext) {
-	try {
-		if (options != null && options.length() > 0) {
-			//default filename
-			DateFormat df = new SimpleDateFormat("yyMMddHHmmss.SSS");
-			String filename = df.format(Calendar.getInstance().getTime());
-			String uri;
-			if (options.has("uri")){
-				uri = options.getString("uri");
-				filename = uri.substring(uri.lastIndexOf("/")+1, uri.length());
-
-				try {
-					filename = URLDecoder.decode(filename,"UTF-8");
-				} catch (UnsupportedEncodingException e) {
-					callbackContext.error("Error in converting filename");
-				}
-
-				DownloadManager downloadManager = (android.app.DownloadManager) cordova.getActivity().getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
-				Uri Download_Uri = Uri.parse(uri);
-
-				DownloadManager.Request request = new android.app.DownloadManager.Request(Download_Uri);
-
-				//Restrict the types of networks over which this download may proceed.
-				request.setAllowedNetworkTypes(android.app.DownloadManager.Request.NETWORK_WIFI | android.app.DownloadManager.Request.NETWORK_MOBILE);
-
-				//Set whether this download may proceed over a roaming connection.
-				request.setAllowedOverRoaming(false);
-
-				//Set the title of this download, to be displayed in notifications (if enabled).
-				if(options.has("title")){
-					request.setTitle(options.getString("title"));
-				} else {
-					request.setTitle(filename);
-				}
-
-				//Set a description of this download, to be displayed in notifications (if enabled)
-				if(options.has("description")){
-					request.setDescription(options.getString("description"));
-				} else {
-					request.setDescription("Downloading file");
-				}
-
-				//Set the local destination for the downloaded file to a path within the application's external files directory
-				if(options.has("setPublicDirectory") && options.has("albumName") && options.getBoolean("setPublicDirectory") && options.getString("albumName").length() > 0 ) {
-					request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "/" + options.getString("albumName") + "/" + filename);
-				} else {
+	private void startDownload(final JSONObject options, CallbackContext callbackContext) {
+		try {
+			if (options != null && options.length() > 0) {
+				//default filename
+				DateFormat df = new SimpleDateFormat("yyMMddHHmmss.SSS");
+				String filename = df.format(Calendar.getInstance().getTime());
+				String uri;
+				if (options.has("uri")){
+					uri = options.getString("uri");
+					filename = uri.substring(uri.lastIndexOf("/")+1, uri.length());
+	
+					try {
+						filename = URLDecoder.decode(filename,"UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						callbackContext.error("Error in converting filename");
+					}
+	
+					DownloadManager downloadManager = (android.app.DownloadManager) cordova.getActivity().getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
+					Uri Download_Uri = Uri.parse(uri);
+	
+					DownloadManager.Request request = new android.app.DownloadManager.Request(Download_Uri);
+	
+					//Restrict the types of networks over which this download may proceed.
+					request.setAllowedNetworkTypes(android.app.DownloadManager.Request.NETWORK_WIFI | android.app.DownloadManager.Request.NETWORK_MOBILE);
+	
+					//Set whether this download may proceed over a roaming connection.
+					request.setAllowedOverRoaming(false);
+	
+					//Set the title of this download, to be displayed in notifications (if enabled).
+					if(options.has("title")){
+						request.setTitle(options.getString("title"));
+					} else {
+						request.setTitle(filename);
+					}
+	
+					//Set a description of this download, to be displayed in notifications (if enabled)
+					if(options.has("description")){
+						request.setDescription(options.getString("description"));
+					} else {
+						request.setDescription("Downloading file");
+					}
+	
 					//Set the local destination for the downloaded file to a path within the application's external files directory
-					request.setDestinationInExternalFilesDir(cordova.getActivity().getApplicationContext(), Environment.DIRECTORY_DOWNLOADS, filename);
+					if(options.has("setPublicDirectory") && options.has("albumName") && options.getBoolean("setPublicDirectory") && options.getString("albumName").length() > 0 ) {
+						request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "/" + options.getString("albumName") + "/" + filename);
+					} else {
+						//Set the local destination for the downloaded file to a path within the application's external files directory
+						request.setDestinationInExternalFilesDir(cordova.getActivity().getApplicationContext(), Environment.DIRECTORY_DOWNLOADS, filename);
+					}
+	
+					//Set visiblity after download is complete
+					request.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+					long downloadReference = downloadManager.enqueue(request);
+					callbackContext.success(filename);
 				}
-
-				//Set visiblity after download is complete
-				request.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-				long downloadReference = downloadManager.enqueue(request);
-				callbackContext.success(filename);
+			} else {
+				callbackContext.error("Expected one non-empty string argument.");
 			}
-		} else {
-			callbackContext.error("Expected one non-empty string argument.");
+		} catch (JSONException e) {
+			callbackContext.error(e.getMessage());
 		}
-	} catch (JSONException e) {
-		callbackContext.error(e.getMessage());
 	}
 }

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 
-import android.app.DownloadManager;
-
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 
@@ -53,13 +51,13 @@ public class DownloadManager extends CordovaPlugin {
 						callbackContext.error("Error in converting filename");
 					}
 
-					DownloadManager downloadManager = (DownloadManager) cordova.getActivity().getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
+					android.app.DownloadManager downloadManager = (android.app.DownloadManager) cordova.getActivity().getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
 					Uri Download_Uri = Uri.parse(uri);
 
-					DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
+					android.app.DownloadManager.Request request = new android.app.DownloadManager.Request(Download_Uri);
 
 					//Restrict the types of networks over which this download may proceed.
-					request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+					request.setAllowedNetworkTypes(android.app.DownloadManager.Request.NETWORK_WIFI | android.app.DownloadManager.Request.NETWORK_MOBILE);
 
 					//Set whether this download may proceed over a roaming connection.
 					request.setAllowedOverRoaming(false);
@@ -87,7 +85,7 @@ public class DownloadManager extends CordovaPlugin {
 					}
 
 					//Set visiblity after download is complete
-					request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+					request.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 					long downloadReference = downloadManager.enqueue(request);
 					callbackContext.success(filename);
 				}

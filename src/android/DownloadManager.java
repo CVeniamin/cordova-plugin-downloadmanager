@@ -64,31 +64,31 @@ public class DownloadManager extends CordovaPlugin {
             request.setAllowedOverRoaming(false);
 			
  	    //Set the title of this download, to be displayed in notifications (if enabled).
-            if(options.has("title")){
-                request.setTitle(options.getString("title"));
-            } else {
-		request.setTitle(filename);
+		if(options.has("title")){
+			request.setTitle(options.getString("title"));
+		} else {
+			request.setTitle(filename);
 	    }
 			
 	    //Set a description of this download, to be displayed in notifications (if enabled)
 	    if(options.has("description")){
-                request.setDescription(options.getString("description"));   
+			request.setDescription(options.getString("description"));   
 	    } else {
-		request.setDescription("Downloading file");   
+			request.setDescription("Downloading file");   
 	    }
-
-            if(options.has("setPublicDirectory") && options.has("albumName") && options.getBoolean("setPublicDirectory") && options.getString("albumName")) {
+			
 		//Set the local destination for the downloaded file to a path within the application's external files directory            
-		request.setDestinationInExternalFilesDir(cordova.getActivity().getApplicationContext(), Environment.DIRECTORY_PICTURES, options.getString("albumName"));
+		if(options.has("setPublicDirectory") && options.has("albumName") && options.getBoolean("setPublicDirectory") && options.getString("albumName").length() > 0 ) {
+			request.setDestinationInExternalFilesDir(cordova.getActivity().getApplicationContext(), Environment.DIRECTORY_PICTURES, options.getString("albumName"));
 	    } else {
-		//Set the local destination for the downloaded file to a path within the application's external files directory
-		request.setDestinationInExternalFilesDir(cordova.getActivity().getApplicationContext(), Environment.DIRECTORY_DOWNLOADS, filename);   
+			//Set the local destination for the downloaded file to a path within the application's external files directory
+			request.setDestinationInExternalFilesDir(cordova.getActivity().getApplicationContext(), Environment.DIRECTORY_DOWNLOADS, filename);   
 	    }
 
-            //Set visiblity after download is complete
-            request.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            long downloadReference = downloadManager.enqueue(request);
-            callbackContext.success(filename);
+		//Set visiblity after download is complete
+		request.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+		long downloadReference = downloadManager.enqueue(request);
+		callbackContext.success(filename);
         } else {
             callbackContext.error("Expected one non-empty string argument.");
         }

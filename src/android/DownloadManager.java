@@ -6,6 +6,8 @@ import android.os.Environment;
 import android.os.Build;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.app.Activity;
+import android.content.Context;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
